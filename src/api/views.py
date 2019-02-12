@@ -15,6 +15,8 @@ from django.views.defaults import bad_request
 from rest_framework import status
 from django.core import serializers
 import json
+from django.core.exceptions import ObjectDoesNotExist
+
 
 @api_view(['GET'])
 def api_root(request, format=None):
@@ -22,6 +24,7 @@ def api_root(request, format=None):
 	return Response({
 		'comments/': reverse('comments', request=request, format=format),
 		'albums/': reverse('albums', request=request, format=format),
+		'genres/': reverse('genres', request=request, format=format),
 		'scores/': reverse('scores', request=request, format=format),
 		'comments/{{pk}}': reverse('comment_detail', request=request, format=format,kwargs={'pk': 1}),
 		'users/': reverse('users', request=request, format=format),
@@ -65,8 +68,11 @@ class AlbumListView(generics.ListCreateAPIView):
 		queryset = Album.objects.all()
 		genre = self.request.query_params.get('genre', None)
 		if genre is not None:
-			genre_id = Genre.objects.get(name=genre).id
-			queryset = queryset.filter(genre=genre_id)
+			try:
+				genre_id = Genre.objects.get(slug=genre).id
+				queryset = queryset.filter(genre=genre_id)
+			except ObjectDoesNotExist as e:
+				queryset = []					
 		return queryset
 	
 	def perform_create(self, serializer):
@@ -88,6 +94,16 @@ class CommentDetailsView(generics.RetrieveUpdateDestroyAPIView):
 
 	queryset = Comment.objects.all()
 	serializer_class = CommentSerializer
+
+class GenreCreateListView(generics.ListCreateAPIView):
+	"""Lists all genres stored in database"""
+	serializer_class = GenreSerializer
+	permission_classes = (IsAdminOrReadOnly, )
+	queryset = Genre.objects.all()
+
+	def perform_create(self, serializer):
+		"""Save the post data when creating a new genre. Only staff menbers can add albums"""
+		serializer.save()
 
 #=====User=====#
 

@@ -18,6 +18,7 @@ urlpatterns = {
 	url(r'^orders/$', order, name="orders"),
 	url(r'^albums/$', AlbumListView.as_view(), name="albums"),
 	url(r'^scores/$', ScoreCreateListView.as_view(), name="scores"),
+	url(r'^genres/$', GenreCreateListView.as_view(), name="genres"),
 	url(r'^comments/(?P<pk>[0-9]+)/$', CommentDetailsView.as_view(), name="comment_detail"),
 }
 
