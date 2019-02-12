@@ -16,6 +16,7 @@ from rest_framework import status
 from django.core import serializers
 import json
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 
 
 @api_view(['GET'])
@@ -70,7 +71,7 @@ class AlbumListView(generics.ListCreateAPIView):
 		if genre is not None:
 			try:
 				genre_id = Genre.objects.get(slug=genre).id
-				queryset = queryset.filter(genre=genre_id)
+				queryset = queryset.filter(Q(genre=genre_id) | Q(parent=genre_id))
 			except ObjectDoesNotExist as e:
 				queryset = []					
 		return queryset
