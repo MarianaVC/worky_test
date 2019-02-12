@@ -8,3 +8,4 @@ src/api/__pycache__
 src/api/migrations
 src/static
 src/worky/settings.py
+src/celerybeat-schedule
