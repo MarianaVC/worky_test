@@ -71,7 +71,7 @@ class AlbumListView(generics.ListCreateAPIView):
 		if genre is not None:
 			try:
 				genre_id = Genre.objects.get(slug=genre).id
-				queryset = queryset.filter(Q(genre=genre_id) | Q(parent=genre_id))
+				queryset = queryset.filter(Q(genre=genre_id) | Q(sub_genre__id_contains=genre_id))
 			except ObjectDoesNotExist as e:
 				queryset = []					
 		return queryset
