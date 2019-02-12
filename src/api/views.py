@@ -126,12 +126,11 @@ class ScoreCreateListView(generics.ListCreateAPIView):
 	serializer_class = ScoreSerializer
 	permission_classes = (IsAuthenticated,)	
 
-	def perform_create(self, serializer):
-		"""Save the post data when creating a new user."""
+	def create(self, request, *args, **kwargs):
 		try:
-			serializer.save(author=self.request.user)
+			return super(ScoreCreateListView, self).create(request, *args, **kwargs)
 		except IntegrityError as e:
-			return Response({'error':'user already scored this album'}, status= status.HTTP_400_BAD_REQUEST)
+			return Response({'error':'user already scored this album'}, status= status.HTTP_400_BAD_REQUEST)				
 
 #=====Orders=====#
 @api_view(['POST'])

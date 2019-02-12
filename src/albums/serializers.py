@@ -68,7 +68,7 @@ class ScoreSerializer(serializers.ModelSerializer):
 	"""Serializer to map model to JSON format"""
 
 	author = MinUserSerializer(read_only = True)
-
+	
 	class Meta:
 		"""Map serializer's fields with model fields"""
 		fields = ('album','author','created_at','score')
