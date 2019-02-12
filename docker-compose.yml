@@ -1,0 +1,61 @@
+version: '2'  
+services:  
+  nginx:
+    image: nginx:latest
+    container_name: nginxworky
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/src
+      - ./config/nginx:/etc/nginx/conf.d
+      - ./src/static:/static             
+    depends_on:
+      - web
+  db:
+    image: postgres:latest
+    container_name: psqlworky
+    ports:
+     - "5434:5432"    
+  web:
+    build: .
+    container_name: djangoworky
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && gunicorn --timeout 120 worky.wsgi -b 0.0.0.0:8000 "
+    depends_on:
+      - db
+    volumes:
+      - ./src:/src
+      - ./src/static:/static       
+    expose:
+      - "8000"
+    links:
+      - db
+      - redis         
+  redis:
+    image: "redis:alpine"
+    container_name: redisworky
+  # RabbitMQ
+  rabbit:
+    hostname: rabbit
+    container_name: rabbitworky
+    image: rabbitmq:3.6.0
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=mypass
+    ports:
+      - "5672:5672"  # we forward this port because it's useful for debugging
+      - "15672:15672"  # here, we can access rabbitmq management plugin  
+  # Celery worker
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: bash -c "celery worker -A worky.celeryconf -Q default -n default@%h"
+    container_name: celeryworky    
+    volumes:
+      - ./src:/src
+    links:
+      - db
+      - rabbit
+      - redis
+    depends_on:
+      - rabbit    
