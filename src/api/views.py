@@ -17,6 +17,7 @@ from django.core import serializers
 import json
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
+from django.db import IntegrityError
 
 
 @api_view(['GET'])
@@ -125,16 +126,12 @@ class ScoreCreateListView(generics.ListCreateAPIView):
 	serializer_class = ScoreSerializer
 	permission_classes = (IsAuthenticated,)	
 
-	def handle_exception(self, exc):
-		"""
-		Handle any exception that occurs, by returning an appropriate
-		response,or re-raising the error.
-		"""
-		return Response({'error':'bad request'}, status= status.HTTP_400_BAD_REQUEST)
-
 	def perform_create(self, serializer):
 		"""Save the post data when creating a new user."""
-		serializer.save(author=self.request.user)
+		try:
+			serializer.save(author=self.request.user)
+		except IntegrityError as e:
+			return Response({'error':'user already scored this album'}, status= status.HTTP_400_BAD_REQUEST)
 
 #=====Orders=====#
 @api_view(['POST'])
