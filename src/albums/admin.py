@@ -37,7 +37,7 @@ class GenreAdmin(admin.ModelAdmin):
 
 class AlbumAdmin(admin.ModelAdmin):
 	fields = ('title','slug','lauch_date','artist','genre','cover','image_tag','author','created_at','updated_at','quantity','price','total_sales')
-	readonly_fields = ('slug', 'created_at','updated_at','author','image_tag')
+	readonly_fields = ('slug', 'created_at','updated_at','author','image_tag','total_sales')
 	list_display = ('title','slug','lauch_date','image_tag','get_avarage')
 	list_filter = ('artist','genre','author')
 	search_fields = ('title','artist','genre')
@@ -53,7 +53,12 @@ class AlbumAdmin(admin.ModelAdmin):
 
 	def get_avarage(self, obj):
 		"""Get avarage on list view"""
-		total = Score.objects.filter(album_id = obj.id).annotate(Count('album_id')).aggregate(Avg('score'))			
+		try:
+			total = int(Score.objects.filter(album_id = obj.id).annotate(Count('album_id')).aggregate(Avg('score'))['score__avg'])			
+		
+		except (TypeError) as e:
+			total = 0
+			
 		return total
 	
 	get_avarage.short_description = "User's grades avarage"
