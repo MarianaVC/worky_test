@@ -30,8 +30,12 @@ def api_root(request, format=None):
 		'scores/': reverse('scores', request=request, format=format),
 		'comments/{{pk}}': reverse('comment_detail', request=request, format=format,kwargs={'pk': 1}),
 		'users/': reverse('users', request=request, format=format),
+		'orders/': reverse('orders', request=request, format=format),
+		'orders/albums/{{pk}}': reverse('album_orders', request=request, format=format),
+		'sales/albums/{{pk}}': reverse('album_detail', request=request, format=format),
 		'api/token/':reverse('token_obtain_pair', request=request, format=format),
 		'api/token/refresh/': reverse('token_refresh', request=request, format=format),
+
 	})
 
 #=====Comments=====#
