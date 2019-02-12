@@ -1,0 +1,10 @@
+src/worky/__pycache__
+src/users/__pycache__
+src/users/migrations
+src/albums/__pycache__
+src/albums/migrations
+src/media
+src/api/__pycache__
+src/api/migrations
+src/static
+src/worky/settings.py
