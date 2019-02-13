@@ -110,6 +110,10 @@ class OrderItem(models.Model):
 	album = models.ForeignKey(Album, related_name='album')
 	quantity = models.IntegerField(default = 0)
 
+	def __str__(self):
+		"""Get human-readable representation"""			
+		return self.album.title
+
 	@property
 	def total(self):
 		album_price = Album.objects.get(pk = self.album.id).price
